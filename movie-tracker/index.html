@@ -1,13 +1,48 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="fr">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>movie-tracker</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Movie Tracker — Mini webapp</title>
+    <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
-    <div id="app"></div>
+    <header class="top">
+      <h1>Movie Tracker 🎞️</h1>
+      <div class="controls">
+        <button id="themeToggle" aria-label="Basculer thème">🌙 / ☀️</button>
+      </div>
+    </header>
+
+    <!-- recherche OMDb -->
+    <section class="search-wrap">
+      <div class="search-box">
+        <input id="searchInput" placeholder="Rechercher un film (ex: batman, matrix)" />
+        <button id="searchBtn">Rechercher</button>
+      </div>
+      <p id="searchStatus" class="muted">Cherche un film via l'API OMDb (remplace la clé si nécessaire).</p>
+      <div id="searchResults" class="grid"></div>
+    </section>
+
+    <main class="container">
+      <!-- Formulaire manuel retiré : ajout via recherche OMDb ou import/export prévu -->
+
+      <section class="list-wrap">
+        <div class="list-head">
+          <h2>Ma collection</h2>
+          <div class="filters">
+            <button id="filterAll" class="active">Tous</button>
+            <button id="filterFav">Favoris</button>
+            <button id="filterRated">Notés</button>
+          </div>
+        </div>
+        <div id="list" class="grid"></div>
+        <p id="empty" class="muted">Aucun film pour l'instant — ajoute ton premier film.</p>
+      </section>
+    </main>
+
+    <footer class="foot muted">Persistance via localStorage · Vanilla JS · Proxy · Responsive</footer>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
