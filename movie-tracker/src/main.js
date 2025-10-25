@@ -2,18 +2,18 @@ import './style.css'
 
 const $ = (selecteur, racine = document) => racine.querySelector(selecteur);
 
-const listeListe = $('#list');
-const listeVide = $('#empty');
-const boutonTheme = $('#themeToggle');
-const inputRecherche = document.getElementById('searchInput');
-const boutonRechercher = document.getElementById('searchBtn');
-const resultatsRecherche = document.getElementById('searchResults');
-const statutRecherche = $('#searchStatus');
-const filtreTous = $('#filterAll');
-const filtreFavoris = $('#filterFav');
-const filtreNotes = $('#filterRated');
-const filtreEnvie = $('#filterWish');
-const statistiques = document.getElementById('stats');
+const listeListe = $('#liste');
+const listeVide = $('#vide');
+const boutonTheme = $('#basculeTheme');
+const inputRecherche = document.getElementById('saisieRecherche');
+const boutonRechercher = document.getElementById('boutonRechercher');
+const resultatsRecherche = document.getElementById('resultatsRecherche');
+const statutRecherche = $('#statutRecherche');
+const filtreTous = $('#filtreTous');
+const filtreFavoris = $('#filtreFavoris');
+const filtreNotes = $('#filtreNotes');
+const filtreEnvie = $('#filtreEnvie');
+const statistiques = document.getElementById('statistiques');
 const navRecherche = document.getElementById('navRecherche');
 const navCollection = document.getElementById('navCollection');
 const sectionRecherche = document.querySelector('.search-wrap');
@@ -244,18 +244,17 @@ filtreTous && filtreTous.addEventListener('click', () => activerFiltre(filtreTou
 filtreFavoris && filtreFavoris.addEventListener('click', () => activerFiltre(filtreFavoris));
 filtreNotes && filtreNotes.addEventListener('click', () => activerFiltre(filtreNotes));
 
-const modale = document.getElementById('modal');
-const boutonFermerModale = document.getElementById('closeModal');
-const affichePoster = document.getElementById('modalPoster');
-const titreMod = document.getElementById('modalTitle');
-const sousTitreMod = document.getElementById('modalSub');
-const metaDonnees = document.getElementById('modalMeta');
-const descriptionFilm = document.getElementById('modalPlot');
-const notationEtoiles = document.getElementById('starRating');
-const valeurNote = document.getElementById('starValue');
-const boutonEnvieModal = document.getElementById('wishBtn');
-const boutonFavoriModal = document.getElementById('favBtn');
-const boutonRetour = document.getElementById('backBtn');
+const modale = document.getElementById('modale');
+const boutonFermerModale = document.getElementById('fermerModale');
+const affichePoster = document.getElementById('posterModale');
+const titreMod = document.getElementById('titreMod');
+const sousTitreMod = document.getElementById('sousTitreMod');
+const metaDonnees = document.getElementById('metaDonnees');
+const descriptionFilm = document.getElementById('descriptionFilm');
+const notationEtoiles = document.getElementById('notationEtoiles');
+const valeurNote = document.getElementById('valeurNote');
+const boutonEnvieModal = document.getElementById('envieModale');
+const boutonFavoriModal = document.getElementById('favoriModale');
 let idActuel = null;
 
 function trouverIndexParId(id) {
