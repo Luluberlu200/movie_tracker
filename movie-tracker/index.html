@@ -14,17 +14,17 @@
         <button id="navCollection" class="nav-btn">Ma collection</button>
       </nav>
       <div class="controls">
-        <button id="themeToggle" aria-label="DARK MODE">DARK MODE</button>
+        <button id="basculeTheme" aria-label="Mode sombre">Mode sombre</button>
       </div>
     </header>
     
     <section class="search-wrap">
       <div class="search-box">
-        <input id="searchInput" placeholder="Rechercher un film" />
-        <button id="searchBtn">Rechercher</button>
+        <input id="saisieRecherche" placeholder="Rechercher un film" />
+        <button id="boutonRechercher">Rechercher</button>
       </div>
-      <p id="searchStatus" class="muted"></p>
-      <div id="searchResults" class="grid"></div>
+      <p id="statutRecherche" class="muted"></p>
+      <div id="resultatsRecherche" class="grid"></div>
     </section>
 
     <main class="container">
@@ -34,43 +34,43 @@
         <div class="list-head">
           <h2>Ma collection</h2>
           <div class="filters">
-            <button id="filterAll" class="active">Tous</button>
-            <button id="filterFav">Favoris</button>
-            <button id="filterRated">Notés</button>
-            <button id="filterWish">Envie</button>
+            <button id="filtreTous" class="active">Tous</button>
+            <button id="filtreFavoris">Favoris</button>
+            <button id="filtreNotes">Notés</button>
+            <button id="filtreEnvie">Envie</button>
           </div>
         </div>
-        <p id="stats" class="muted"></p>
-        <div id="list" class="grid"></div>
-        <p id="empty" class="muted">Aucun film </p>
+        <p id="statistiques" class="muted"></p>
+        <div id="liste" class="grid"></div>
+        <p id="vide" class="muted">Aucun film </p>
       </section>
     </main>
 
     <footer class="foot muted"></footer>
 
     
-    <div id="modal" aria-hidden="true" class="modal hidden">
+    <div id="modale" aria-hidden="true" class="modal hidden">
       <div class="modal-backdrop" data-close></div>
-      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <button id="closeModal" class="modal-close" aria-label="Fermer" data-close>✕</button>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="titreMod">
+        <button id="fermerModale" class="modal-close" aria-label="Fermer" data-close>✕</button>
         <div class="modal-body">
           <div class="modal-left">
-            <img id="modalPoster" alt="Affiche" class="modal-poster"/>
+            <img id="posterModale" alt="Affiche" class="modal-poster"/>
           </div>
           <div class="modal-right">
-            <h3 id="modalTitle"></h3>
-            <p class="muted" id="modalSub"></p>
-            <div id="modalMeta" class="modal-meta"></div>
-            <p id="modalPlot" class="modal-plot"></p>
+            <h3 id="titreMod"></h3>
+            <p class="muted" id="sousTitreMod"></p>
+            <div id="metaDonnees" class="modal-meta"></div>
+            <p id="descriptionFilm" class="modal-plot"></p>
             <div class="rating-wrap">
-              <div id="starRating" class="stars" aria-label="Note sur 10"></div>
-              <span id="starValue" class="muted"></span>
+              <div id="notationEtoiles" class="stars" aria-label="Note sur 10"></div>
+              <span id="valeurNote" class="muted"></span>
             </div>
             <div class="modal-actions">
-              <button id="wishBtn" class="ghost">Envie de regarder</button>
-              <button id="favBtn" class="ghost">Coup de coeur</button>
+              <button id="envieModale" class="ghost">Envie de regarder</button>
+              <button id="favoriModale" class="ghost">Coup de cœur</button>
             </div>
-            <p id="modalHint" class="muted">Clique sur les étoiles pour noter</p>
+            <p class="muted">Clique sur les étoiles pour noter</p>
           </div>
         </div>
       </div>
