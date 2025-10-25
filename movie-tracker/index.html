@@ -3,29 +3,32 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Movie Tracker — Mini webapp</title>
+    <title>Movie Tracker</title>
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
     <header class="top">
-      <h1>Movie Tracker 🎞️</h1>
+      <h1>Movie Tracker</h1>
+      <nav class="nav-menu">
+        <button id="navRecherche" class="nav-btn active">Recherche</button>
+        <button id="navCollection" class="nav-btn">Ma collection</button>
+      </nav>
       <div class="controls">
-        <button id="themeToggle" aria-label="Basculer thème">🌙 / ☀️</button>
+        <button id="themeToggle" aria-label="DARK MODE">DARK MODE</button>
       </div>
     </header>
-
-    <!-- recherche OMDb -->
+    
     <section class="search-wrap">
       <div class="search-box">
-        <input id="searchInput" placeholder="Rechercher un film (ex: batman, matrix)" />
+        <input id="searchInput" placeholder="Rechercher un film" />
         <button id="searchBtn">Rechercher</button>
       </div>
-      <p id="searchStatus" class="muted">Cherche un film via l'API OMDb (remplace la clé si nécessaire).</p>
+      <p id="searchStatus" class="muted"></p>
       <div id="searchResults" class="grid"></div>
     </section>
 
     <main class="container">
-      <!-- Formulaire manuel retiré : ajout via recherche OMDb ou import/export prévu -->
+
 
       <section class="list-wrap">
         <div class="list-head">
@@ -34,14 +37,44 @@
             <button id="filterAll" class="active">Tous</button>
             <button id="filterFav">Favoris</button>
             <button id="filterRated">Notés</button>
+            <button id="filterWish">Envie</button>
           </div>
         </div>
+        <p id="stats" class="muted"></p>
         <div id="list" class="grid"></div>
-        <p id="empty" class="muted">Aucun film pour l'instant — ajoute ton premier film.</p>
+        <p id="empty" class="muted">Aucun film </p>
       </section>
     </main>
 
-    <footer class="foot muted">Persistance via localStorage · Vanilla JS · Proxy · Responsive</footer>
+    <footer class="foot muted"></footer>
+
+    
+    <div id="modal" aria-hidden="true" class="modal hidden">
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button id="closeModal" class="modal-close" aria-label="Fermer" data-close>✕</button>
+        <div class="modal-body">
+          <div class="modal-left">
+            <img id="modalPoster" alt="Affiche" class="modal-poster"/>
+          </div>
+          <div class="modal-right">
+            <h3 id="modalTitle"></h3>
+            <p class="muted" id="modalSub"></p>
+            <div id="modalMeta" class="modal-meta"></div>
+            <p id="modalPlot" class="modal-plot"></p>
+            <div class="rating-wrap">
+              <div id="starRating" class="stars" aria-label="Note sur 10"></div>
+              <span id="starValue" class="muted"></span>
+            </div>
+            <div class="modal-actions">
+              <button id="wishBtn" class="ghost">Envie de regarder</button>
+              <button id="favBtn" class="ghost">Coup de coeur</button>
+            </div>
+            <p id="modalHint" class="muted">Clique sur les étoiles pour noter</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
