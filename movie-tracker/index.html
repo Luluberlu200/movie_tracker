@@ -8,9 +8,13 @@
   </head>
   <body>
     <header class="top">
-      <h1>Movie Tracker</h1>
+      <div class="logo-title">
+        <img src="/src/logo_film.webp" alt="Logo" class="logo" />
+        <h1>Movie Tracker</h1>
+      </div>
       <nav class="nav-menu">
-        <button id="navRecherche" class="nav-btn active">Recherche</button>
+        <button id="navAccueil" class="nav-btn active">Accueil</button>
+        <button id="navRecherche" class="nav-btn">Recherche</button>
         <button id="navCollection" class="nav-btn">Ma collection</button>
       </nav>
       <div class="controls">
@@ -18,7 +22,15 @@
       </div>
     </header>
     
-    <section class="search-wrap">
+    <section class="accueil-wrap">
+      <div class="accueil-content">
+        <h2>Dernières sorties</h2>
+        <div id="derniersFilms" class="grid"></div>
+        <p id="accueilVide" class="muted" style="display: none;"></p>
+      </div>
+    </section>
+    
+    <section class="search-wrap" style="display: none;">
       <div class="search-box">
         <input id="saisieRecherche" placeholder="Rechercher un film" />
         <button id="boutonRechercher">Rechercher</button>
@@ -27,7 +39,7 @@
       <div id="resultatsRecherche" class="grid"></div>
     </section>
 
-    <main class="container">
+    <main class="container" style="display: none;">
 
 
       <section class="list-wrap">
