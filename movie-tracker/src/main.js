@@ -1,27 +1,26 @@
 import './style.css'
 
 const $ = (selecteur, racine = document) => racine.querySelector(selecteur);
-
 const listeListe = $('#liste');
 const listeVide = $('#vide');
-const boutonTheme = $('#basculeTheme');
-const inputRecherche = document.getElementById('saisieRecherche');
-const boutonRechercher = document.getElementById('boutonRechercher');
-const resultatsRecherche = document.getElementById('resultatsRecherche');
-const statutRecherche = $('#statutRecherche');
 const filtreTous = $('#filtreTous');
 const filtreFavoris = $('#filtreFavoris');
 const filtreNotes = $('#filtreNotes');
 const filtreEnvie = $('#filtreEnvie');
 const statistiques = document.getElementById('statistiques');
+const inputRecherche = document.getElementById('saisieRecherche');
+const boutonRechercher = document.getElementById('boutonRechercher');
+const resultatsRecherche = document.getElementById('resultatsRecherche');
+const statutRecherche = $('#statutRecherche');
+const derniersFilms = document.getElementById('derniersFilms');
+const accueilVide = document.getElementById('accueilVide');
 const navAccueil = document.getElementById('navAccueil');
 const navRecherche = document.getElementById('navRecherche');
 const navCollection = document.getElementById('navCollection');
 const sectionAccueil = document.querySelector('.accueil-wrap');
 const sectionRecherche = document.querySelector('.search-wrap');
 const sectionCollection = document.querySelector('.container');
-const derniersFilms = document.getElementById('derniersFilms');
-const accueilVide = document.getElementById('accueilVide');
+const boutonTheme = $('#basculeTheme');
 
 const CLE_STOCKAGE = 'movieTracker.movies_v1';
 const CLE_THEME = 'movieTracker.theme_v1';
@@ -40,11 +39,7 @@ const afficher = () => {
     return tableau;
   })();
 
-  if (!visibles.length) {
-    listeVide.style.display = 'block';
-    return;
-  }
-  listeVide.style.display = 'none';
+ 
 
   visibles.forEach((film) => {
     const carte = document.createElement('article');
@@ -53,15 +48,10 @@ const afficher = () => {
     carte.dataset.id = film.id;
     carte.innerHTML = `
       <div class="posterWrap">
-        <div class="badges">
-          ${film.fav ? '<span class="badge heart">❤</span>' : ''}
-          ${film.wish ? '<span class="badge wish">👁</span>' : ''}
-          ${typeof film.rating === 'number' ? `<span class="badge rating">${film.rating}★</span>` : ''}
-        </div>
-        <img class="poster" src="${film.poster || ''}" alt="${echapperHtml(film.title)}" onerror="this.src=''; this.closest('.posterWrap').classList.add('noimg')" />
+        <img class="poster" src="${film.poster || ''}" alt="${film.title}" onerror="this.src=''; this.closest('.posterWrap').classList.add('noimg')" />
       </div>
       <div class="meta">
-        <h3 class="title">${echapperHtml(film.title)}</h3>
+        <h3 class="title">${film.title}</h3>
         <p class="sub">${film.year} · ${film.rating ?? '-'} /10</p>
         <div class="actions">
           <button class="fav ${film.fav ? 'active' : ''}" data-film-id="${film.id}">${film.fav ? '★ Favori' : '☆ Favori'}</button>
@@ -73,78 +63,6 @@ const afficher = () => {
 
     listeListe.appendChild(carte);
   });
-
-  const total = films.length;
-  const nombreFavoris = films.filter(f => f.fav).length;
-  const nombreEnvie = films.filter(f => f.wish).length;
-  const nombreNotes = films.filter(f => typeof f.rating === 'number').length;
-  if (statistiques) statistiques.textContent = `Total: ${total} · Favoris: ${nombreFavoris} · Envie: ${nombreEnvie} · Notés: ${nombreNotes}`;
-};
-
-function echapperHtml(texte = '') { 
-  return String(texte).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]); 
-}
-
-const afficherAccueil = async () => {
-  if (!derniersFilms) return;
-  
-  accueilVide.textContent = 'Chargement des dernières sorties...';
-  accueilVide.style.display = 'block';
-  derniersFilms.innerHTML = '';
-  
-  try {
-    const anneeActuelle = new Date().getFullYear();
-    const recherches = [
-      `https://www.omdbapi.com/?apikey=${CLE_OMDB}&s=2025&type=movie&y=${anneeActuelle}`,
-      `https://www.omdbapi.com/?apikey=${CLE_OMDB}&s=action&type=movie&y=${anneeActuelle}`,
-      `https://www.omdbapi.com/?apikey=${CLE_OMDB}&s=adventure&type=movie&y=${anneeActuelle}`,
-      `https://www.omdbapi.com/?apikey=${CLE_OMDB}&s=drama&type=movie&y=${anneeActuelle}`
-    ];
-    
-    const resultats = await Promise.all(
-      recherches.map(url => fetch(url).then(r => r.json()))
-    );
-    
-    const tousFilms = resultats
-      .filter(data => data.Response === 'True' && data.Search)
-      .flatMap(data => data.Search)
-      .filter((film, index, self) => 
-        index === self.findIndex(f => f.imdbID === film.imdbID)
-      );
-    
-    if (!tousFilms.length) {
-      accueilVide.textContent = 'Aucune sortie récente trouvée.';
-      accueilVide.style.display = 'block';
-      return;
-    }
-    
-    accueilVide.style.display = 'none';
-    
-    tousFilms.slice(0, 4).forEach((film) => {
-      const carte = document.createElement('article');
-      carte.className = 'card';
-      carte.innerHTML = `
-        <div class="posterWrap">
-          <img class="poster" src="${film.Poster && film.Poster !== 'N/A' ? film.Poster : ''}" alt="${echapperHtml(film.Title)}" onerror="this.src=''; this.closest('.posterWrap').classList.add('noimg')" />
-        </div>
-        <div class="meta">
-          <h3 class="title">${echapperHtml(film.Title)}</h3>
-          <p class="sub">${film.Year}</p>
-        </div>
-      `;
-      
-      carte.addEventListener('click', async () => {
-        const details = await obtenirDetailsFilm(film.imdbID);
-        if (details) ouvrirModal(details, false);
-      });
-      
-      derniersFilms.appendChild(carte);
-    });
-  } catch (erreur) {
-    console.error('Erreur chargement accueil:', erreur);
-    accueilVide.textContent = 'Erreur lors du chargement des films.';
-    accueilVide.style.display = 'block';
-  }
 };
 
 const sauvegarder = () => localStorage.setItem(CLE_STOCKAGE, JSON.stringify(donnees));
@@ -160,7 +78,7 @@ const gestionnaire = {
 
 const films = new Proxy(donnees, gestionnaire);
 
-function ajouterFilm(film) { films.push(film); }
+
 
 function modifierFilm(index, film) { films[index] = Object.assign(films[index] || {}, film); }
 
@@ -171,6 +89,7 @@ function supprimerFilm(index) {
     films.splice(index, 1);
   }, 250);
 }
+
 function appliquerTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem(CLE_THEME, theme);
@@ -185,7 +104,6 @@ const themeSauvegarde = localStorage.getItem(CLE_THEME) || 'light';
 appliquerTheme(themeSauvegarde);
 
 afficher();
-afficherAccueil();
 
 listeListe.addEventListener('click', (e) => {
   const bouton = e.target.closest('button');
@@ -226,10 +144,10 @@ async function rechercherOmdb(requete) {
       carte.className = 'card';
       carte.innerHTML = `
         <div class="posterWrap">
-          <img class="poster" src="${film.Poster && film.Poster !== 'N/A' ? film.Poster : ''}" alt="${echapperHtml(film.Title)}" onerror="this.src=''; this.closest('.posterWrap').classList.add('noimg')" />
+          <img class="poster" src="${film.Poster && film.Poster !== 'N/A' ? film.Poster : ''}" alt="${film.Title}" onerror="this.src=''; this.closest('.posterWrap').classList.add('noimg')" />
         </div>
         <div class="meta">
-          <h3 class="title">${echapperHtml(film.Title)}</h3>
+          <h3 class="title">${film.Title}</h3>
           <p class="sub">${film.Year}</p>
         </div>
       `;
@@ -386,8 +304,8 @@ function ouvrirModal(infos, ajouterACollection = true) {
   sousTitreMod.textContent = film.year || '';
   
   let metaHTML = '';
-  if (film.genre) metaHTML += `<span><strong>Genre:</strong> ${echapperHtml(film.genre)}</span>`;
-  if (film.runtime) metaHTML += `<span><strong>Durée:</strong> ${echapperHtml(film.runtime)}</span>`;
+  if (film.genre) metaHTML += `<span><strong>Genre:</strong> ${film.genre}</span>`;
+  if (film.runtime) metaHTML += `<span><strong>Durée:</strong> ${film.runtime}</span>`;
   metaDonnees.innerHTML = metaHTML;
   
   descriptionFilm.textContent = film.plot || '';
@@ -423,11 +341,11 @@ notationEtoiles && notationEtoiles.addEventListener('click', (e) => {
   afficherEtoiles(valeur);
 });
 
-boutonEnvieModal && boutonEnvieModal.addEventListener('click', () => {
+function basculerModalAction(type) {
   if (!idActuel) return;
   let index = trouverIndexParId(idActuel);
   if (index === -1) {
-    const filmActuel = {
+    films.push({
       id: idActuel,
       title: titreMod.textContent,
       year: sousTitreMod.textContent,
@@ -435,67 +353,30 @@ boutonEnvieModal && boutonEnvieModal.addEventListener('click', () => {
       plot: descriptionFilm.textContent,
       genre: '',
       runtime: '',
-      wish: true,
-      fav: false,
+      wish: type === 'wish',
+      fav: type === 'fav',
       createdAt: Date.now()
-    };
-    films.push(filmActuel);
+    });
     index = films.length - 1;
   } else {
-    const nouveau = !films[index].wish;
-    modifierFilm(index, { wish: nouveau, updatedAt: Date.now() });
+    modifierFilm(index, { [type]: !films[index][type], updatedAt: Date.now() });
   }
-  boutonEnvieModal.classList.toggle('active', films[index].wish);
-});
+  const bouton = type === 'wish' ? boutonEnvieModal : boutonFavoriModal;
+  bouton.classList.toggle('active', films[index][type]);
+}
 
-boutonFavoriModal && boutonFavoriModal.addEventListener('click', () => {
-  if (!idActuel) return;
-  let index = trouverIndexParId(idActuel);
-  if (index === -1) {
-    const filmActuel = {
-      id: idActuel,
-      title: titreMod.textContent,
-      year: sousTitreMod.textContent,
-      poster: affichePoster.src,
-      plot: descriptionFilm.textContent,
-      genre: '',
-      runtime: '',
-      wish: false,
-      fav: true,
-      createdAt: Date.now()
-    };
-    films.push(filmActuel);
-    index = films.length - 1;
-  } else {
-    const nouveau = !films[index].fav;
-    modifierFilm(index, { fav: nouveau, updatedAt: Date.now() });
-  }
-  boutonFavoriModal.classList.toggle('active', films[index].fav);
-});
+boutonEnvieModal?.addEventListener('click', () => basculerModalAction('wish'));
+boutonFavoriModal?.addEventListener('click', () => basculerModalAction('fav'));
 
-navAccueil && navAccueil.addEventListener('click', () => {
-  navAccueil.classList.add('active');
-  navRecherche.classList.remove('active');
-  navCollection.classList.remove('active');
-  sectionAccueil.style.display = 'block';
-  sectionRecherche.style.display = 'none';
-  sectionCollection.style.display = 'none';
-});
+function changerPage(pageActive) {
+  const pages = { accueil: [navAccueil, sectionAccueil], recherche: [navRecherche, sectionRecherche], collection: [navCollection, sectionCollection] };
+  Object.entries(pages).forEach(([nom, [nav, section]]) => {
+    const estActif = nom === pageActive;
+    nav?.classList.toggle('active', estActif);
+    if (section) section.style.display = estActif ? 'block' : 'none';
+  });
+}
 
-navRecherche && navRecherche.addEventListener('click', () => {
-  navRecherche.classList.add('active');
-  navAccueil.classList.remove('active');
-  navCollection.classList.remove('active');
-  sectionAccueil.style.display = 'none';
-  sectionRecherche.style.display = 'block';
-  sectionCollection.style.display = 'none';
-});
-
-navCollection && navCollection.addEventListener('click', () => {
-  navCollection.classList.add('active');
-  navAccueil.classList.remove('active');
-  navRecherche.classList.remove('active');
-  sectionAccueil.style.display = 'none';
-  sectionRecherche.style.display = 'none';
-  sectionCollection.style.display = 'block';
-});
+navAccueil?.addEventListener('click', () => changerPage('accueil'));
+navRecherche?.addEventListener('click', () => changerPage('recherche'));
+navCollection?.addEventListener('click', () => changerPage('collection'));
