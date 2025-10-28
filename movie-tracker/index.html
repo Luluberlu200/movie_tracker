@@ -3,79 +3,42 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Movie Tracker</title>
+    <title>Movie Tracker — Accueil</title>
     <link rel="stylesheet" href="/src/style.css">
+    <style>
+      /* Styles de la page d'accueil (landing) */
+      html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+      .landing{
+        min-height:100vh;
+        background-image: linear-gradient(rgba(2,6,23,0.45), rgba(2,6,23,0.45)), url('/nano-banana-2025-10-28T13-38-48.png');
+        background-size:cover;
+        background-position:center;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color: #fff;
+        text-align:center;
+        padding:24px;
+      }
+      .landing .box{max-width:920px;}
+      .landing h1{font-size:clamp(1.5rem,4vw,3rem);margin:0 0 12px;}
+      .landing p{margin:0 0 20px;color:rgba(255,255,255,0.9);font-size:1.05rem}
+      .enter-btn{
+        display:inline-block;padding:12px 20px;border-radius:10px;background:rgba(255,255,255,0.12);color:white;text-decoration:none;border:1px solid rgba(255,255,255,0.18);backdrop-filter: blur(4px);
+        transition:transform .12s ease,background .12s ease,opacity .12s ease;
+      }
+      .enter-btn:hover{transform:translateY(-3px);background:rgba(255,255,255,0.18);}
+      @media (max-width:640px){ .landing p{font-size:0.95rem;} }
+    </style>
   </head>
   <body>
-    <header class="top">
-      <h1>Movie Tracker</h1>
-      <nav class="nav-menu">
-        <button id="navRecherche" class="nav-btn active">Recherche</button>
-        <button id="navCollection" class="nav-btn">Ma collection</button>
-      </nav>
-      <div class="controls">
-        <button id="basculeTheme" class="nav-btn" aria-label="Mode sombre">Mode sombre</button>
+    <main class="landing" role="main">
+      <div class="box">
+        <h1>Bienvenue sur Movie Tracker</h1>
+        <p>Gère ta collection de films, note-les, marque tes coups de cœur et trouve de nouvelles idées de visionnage.</p>
+        <p><a class="enter-btn" href="/app.html">Entrer dans l'app</a></p>
+        <p style="margin-top:8px;color:rgba(255,255,255,0.8);font-size:0.9rem;">Si ton navigateur supporte le thème sombre, tu pourras l'activer depuis l'app.</p>
       </div>
-    </header>
-    
-    <section class="search-wrap">
-      <div class="search-box">
-        <input id="saisieRecherche" placeholder="Rechercher un film" />
-        <button id="boutonRechercher">Rechercher</button>
-      </div>
-      <p id="statutRecherche" class="muted"></p>
-      <div id="resultatsRecherche" class="grid"></div>
-    </section>
-
-    <main class="container">
-
-
-      <section class="list-wrap">
-        <div class="list-head">
-          <h2>Ma collection</h2>
-          <div class="filters">
-            <button id="filtreTous" class="active">Tous</button>
-            <button id="filtreFavoris">Favoris</button>
-            <button id="filtreNotes">Notés</button>
-            <button id="filtreEnvie">Envie</button>
-          </div>
-        </div>
-        <p id="statistiques" class="muted"></p>
-        <div id="liste" class="grid"></div>
-        <p id="vide" class="muted">Aucun film </p>
-      </section>
     </main>
-
-    <footer class="foot muted"></footer>
-
-    
-    <div id="modale" aria-hidden="true" class="modal hidden">
-      <div class="modal-backdrop" data-close></div>
-      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="titreMod">
-        <button id="fermerModale" class="modal-close" aria-label="Fermer" data-close>✕</button>
-        <div class="modal-body">
-          <div class="modal-left">
-            <img id="posterModale" alt="Affiche" class="modal-poster"/>
-          </div>
-          <div class="modal-right">
-            <h3 id="titreMod"></h3>
-            <p class="muted" id="sousTitreMod"></p>
-            <div id="metaDonnees" class="modal-meta"></div>
-            <p id="descriptionFilm" class="modal-plot"></p>
-            <div class="rating-wrap">
-              <div id="notationEtoiles" class="stars" aria-label="Note sur 10"></div>
-              <span id="valeurNote" class="muted"></span>
-            </div>
-            <div class="modal-actions">
-              <button id="envieModale" class="ghost">Envie de regarder</button>
-              <button id="favoriModale" class="ghost">Coup de cœur</button>
-            </div>
-            <p class="muted">Clique sur les étoiles pour noter</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
