@@ -24,6 +24,8 @@
 html,body { height: 100%; margin: 0; background: var(--bg); color: var(--text); }
 
 .top { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 24px; flex-wrap: wrap; }
+.logo-title { display: flex; align-items: center; gap: 12px; }
+.logo { width: 48px; height: 48px; object-fit: contain; border-radius: 8px; }
 .top h1 { margin:0; font-size:1.25rem; }
 .nav-menu { display: flex; gap: 8px; }
 .nav-btn {
@@ -49,6 +51,32 @@ html,body { height: 100%; margin: 0; background: var(--bg); color: var(--text); 
   transform: scale(0.95);
 }
 .controls button { background:transparent; border:1px solid transparent; padding:8px 10px; border-radius:8px; cursor:pointer; }
+
+.accueil-wrap {
+  padding: 40px 24px;
+}
+
+.accueil-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.accueil-content h2 {
+  font-size: 1.8rem;
+  margin-bottom: 24px;
+  color: var(--text);
+  text-align: center;
+}
+
+.accueil-content .grid {
+  margin-top: 0;
+}
+
+.accueil-content .muted {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 1rem;
+}
 
 .search-wrap { padding: 20px 24px; background: var(--card); margin-bottom: 20px; }
 .search-box { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; }

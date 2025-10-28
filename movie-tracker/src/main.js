@@ -14,10 +14,14 @@ const filtreFavoris = $('#filtreFavoris');
 const filtreNotes = $('#filtreNotes');
 const filtreEnvie = $('#filtreEnvie');
 const statistiques = document.getElementById('statistiques');
+const navAccueil = document.getElementById('navAccueil');
 const navRecherche = document.getElementById('navRecherche');
 const navCollection = document.getElementById('navCollection');
+const sectionAccueil = document.querySelector('.accueil-wrap');
 const sectionRecherche = document.querySelector('.search-wrap');
 const sectionCollection = document.querySelector('.container');
+const derniersFilms = document.getElementById('derniersFilms');
+const accueilVide = document.getElementById('accueilVide');
 
 const CLE_STOCKAGE = 'movieTracker.movies_v1';
 const CLE_THEME = 'movieTracker.theme_v1';
@@ -81,6 +85,68 @@ function echapperHtml(texte = '') {
   return String(texte).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]); 
 }
 
+const afficherAccueil = async () => {
+  if (!derniersFilms) return;
+  
+  accueilVide.textContent = 'Chargement des dernières sorties...';
+  accueilVide.style.display = 'block';
+  derniersFilms.innerHTML = '';
+  
+  try {
+    const anneeActuelle = new Date().getFullYear();
+    const recherches = [
+      `https://www.omdbapi.com/?apikey=${CLE_OMDB}&s=2025&type=movie&y=${anneeActuelle}`,
+      `https://www.omdbapi.com/?apikey=${CLE_OMDB}&s=action&type=movie&y=${anneeActuelle}`,
+      `https://www.omdbapi.com/?apikey=${CLE_OMDB}&s=adventure&type=movie&y=${anneeActuelle}`,
+      `https://www.omdbapi.com/?apikey=${CLE_OMDB}&s=drama&type=movie&y=${anneeActuelle}`
+    ];
+    
+    const resultats = await Promise.all(
+      recherches.map(url => fetch(url).then(r => r.json()))
+    );
+    
+    const tousFilms = resultats
+      .filter(data => data.Response === 'True' && data.Search)
+      .flatMap(data => data.Search)
+      .filter((film, index, self) => 
+        index === self.findIndex(f => f.imdbID === film.imdbID)
+      );
+    
+    if (!tousFilms.length) {
+      accueilVide.textContent = 'Aucune sortie récente trouvée.';
+      accueilVide.style.display = 'block';
+      return;
+    }
+    
+    accueilVide.style.display = 'none';
+    
+    tousFilms.slice(0, 4).forEach((film) => {
+      const carte = document.createElement('article');
+      carte.className = 'card';
+      carte.innerHTML = `
+        <div class="posterWrap">
+          <img class="poster" src="${film.Poster && film.Poster !== 'N/A' ? film.Poster : ''}" alt="${echapperHtml(film.Title)}" onerror="this.src=''; this.closest('.posterWrap').classList.add('noimg')" />
+        </div>
+        <div class="meta">
+          <h3 class="title">${echapperHtml(film.Title)}</h3>
+          <p class="sub">${film.Year}</p>
+        </div>
+      `;
+      
+      carte.addEventListener('click', async () => {
+        const details = await obtenirDetailsFilm(film.imdbID);
+        if (details) ouvrirModal(details, false);
+      });
+      
+      derniersFilms.appendChild(carte);
+    });
+  } catch (erreur) {
+    console.error('Erreur chargement accueil:', erreur);
+    accueilVide.textContent = 'Erreur lors du chargement des films.';
+    accueilVide.style.display = 'block';
+  }
+};
+
 const sauvegarder = () => localStorage.setItem(CLE_STOCKAGE, JSON.stringify(donnees));
 
 const gestionnaire = {
@@ -119,6 +185,7 @@ const themeSauvegarde = localStorage.getItem(CLE_THEME) || 'light';
 appliquerTheme(themeSauvegarde);
 
 afficher();
+afficherAccueil();
 
 listeListe.addEventListener('click', (e) => {
   const bouton = e.target.closest('button');
@@ -297,10 +364,22 @@ function afficherEtoiles(valeur = 0) {
   valeurNote.textContent = note ? `${note}/10` : '';
 }
 
-function ouvrirModal(infos) {
-  const index = creerOuModifierFilm(infos);
+function ouvrirModal(infos, ajouterACollection = true) {
   idActuel = infos.id;
-  const film = films[index];
+  
+  let film;
+  if (ajouterACollection) {
+    const index = creerOuModifierFilm(infos);
+    film = films[index];
+  } else {
+    const indexExistant = trouverIndexParId(infos.id);
+    if (indexExistant !== -1) {
+      film = films[indexExistant];
+    } else {
+      film = infos;
+    }
+  }
+  
   affichePoster.src = film.poster || '';
   affichePoster.onerror = () => { affichePoster.src = ''; };
   titreMod.textContent = film.title;
@@ -346,32 +425,77 @@ notationEtoiles && notationEtoiles.addEventListener('click', (e) => {
 
 boutonEnvieModal && boutonEnvieModal.addEventListener('click', () => {
   if (!idActuel) return;
-  const index = trouverIndexParId(idActuel);
-  if (index === -1) return;
-  const nouveau = !films[index].wish;
-  modifierFilm(index, { wish: nouveau, updatedAt: Date.now() });
-  boutonEnvieModal.classList.toggle('active', nouveau);
+  let index = trouverIndexParId(idActuel);
+  if (index === -1) {
+    const filmActuel = {
+      id: idActuel,
+      title: titreMod.textContent,
+      year: sousTitreMod.textContent,
+      poster: affichePoster.src,
+      plot: descriptionFilm.textContent,
+      genre: '',
+      runtime: '',
+      wish: true,
+      fav: false,
+      createdAt: Date.now()
+    };
+    films.push(filmActuel);
+    index = films.length - 1;
+  } else {
+    const nouveau = !films[index].wish;
+    modifierFilm(index, { wish: nouveau, updatedAt: Date.now() });
+  }
+  boutonEnvieModal.classList.toggle('active', films[index].wish);
 });
 
 boutonFavoriModal && boutonFavoriModal.addEventListener('click', () => {
   if (!idActuel) return;
-  const index = trouverIndexParId(idActuel);
-  if (index === -1) return;
-  const nouveau = !films[index].fav;
-  modifierFilm(index, { fav: nouveau, updatedAt: Date.now() });
-  boutonFavoriModal.classList.toggle('active', nouveau);
+  let index = trouverIndexParId(idActuel);
+  if (index === -1) {
+    const filmActuel = {
+      id: idActuel,
+      title: titreMod.textContent,
+      year: sousTitreMod.textContent,
+      poster: affichePoster.src,
+      plot: descriptionFilm.textContent,
+      genre: '',
+      runtime: '',
+      wish: false,
+      fav: true,
+      createdAt: Date.now()
+    };
+    films.push(filmActuel);
+    index = films.length - 1;
+  } else {
+    const nouveau = !films[index].fav;
+    modifierFilm(index, { fav: nouveau, updatedAt: Date.now() });
+  }
+  boutonFavoriModal.classList.toggle('active', films[index].fav);
+});
+
+navAccueil && navAccueil.addEventListener('click', () => {
+  navAccueil.classList.add('active');
+  navRecherche.classList.remove('active');
+  navCollection.classList.remove('active');
+  sectionAccueil.style.display = 'block';
+  sectionRecherche.style.display = 'none';
+  sectionCollection.style.display = 'none';
 });
 
 navRecherche && navRecherche.addEventListener('click', () => {
   navRecherche.classList.add('active');
+  navAccueil.classList.remove('active');
   navCollection.classList.remove('active');
+  sectionAccueil.style.display = 'none';
   sectionRecherche.style.display = 'block';
   sectionCollection.style.display = 'none';
 });
 
 navCollection && navCollection.addEventListener('click', () => {
   navCollection.classList.add('active');
+  navAccueil.classList.remove('active');
   navRecherche.classList.remove('active');
+  sectionAccueil.style.display = 'none';
   sectionRecherche.style.display = 'none';
   sectionCollection.style.display = 'block';
 });
