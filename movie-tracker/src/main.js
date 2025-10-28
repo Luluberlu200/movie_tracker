@@ -2,18 +2,14 @@ import './style.css'
 
 const $ = (selecteur, racine = document) => racine.querySelector(selecteur);
 const listeListe = $('#liste');
-const listeVide = $('#vide');
 const filtreTous = $('#filtreTous');
 const filtreFavoris = $('#filtreFavoris');
 const filtreNotes = $('#filtreNotes');
 const filtreEnvie = $('#filtreEnvie');
-const statistiques = document.getElementById('statistiques');
 const inputRecherche = document.getElementById('saisieRecherche');
 const boutonRechercher = document.getElementById('boutonRechercher');
 const resultatsRecherche = document.getElementById('resultatsRecherche');
 const statutRecherche = $('#statutRecherche');
-const derniersFilms = document.getElementById('derniersFilms');
-const accueilVide = document.getElementById('accueilVide');
 const navAccueil = document.getElementById('navAccueil');
 const navRecherche = document.getElementById('navRecherche');
 const navCollection = document.getElementById('navCollection');
@@ -202,7 +198,7 @@ function basculerFavori(index) {
   const actuel = films[index];
   const modifie = Object.assign({}, actuel, { 
     fav: !actuel.fav, 
-    updatedAt: Date.now() 
+    
   });
   films[index] = modifie;
 }
@@ -210,10 +206,9 @@ function basculerFavori(index) {
 function basculerEnvie(index) {
   if (!films[index]) return;
   const actuel = films[index];
-  const nouvelleValeur = actuel.wish === true ? false : true;
+  const nouvelleValeur = !actuel.wish;
   const modifie = Object.assign({}, actuel, { 
-    wish: nouvelleValeur, 
-    updatedAt: Date.now() 
+    wish: nouvelleValeur 
   });
   films[index] = modifie;
 }
@@ -331,13 +326,12 @@ boutonFermerModale && boutonFermerModale.addEventListener('click', fermerModal);
 
 notationEtoiles && notationEtoiles.addEventListener('click', (e) => {
   const cible = e.target;
-  if (!(cible instanceof HTMLElement)) return;
-  if (!cible.classList.contains('star')) return;
+  
   const valeur = Number(cible.dataset.value || 0);
   if (!idActuel) return;
   const index = trouverIndexParId(idActuel);
   if (index === -1) return;
-  modifierFilm(index, { rating: valeur, updatedAt: Date.now() });
+  modifierFilm(index, { rating: valeur});
   afficherEtoiles(valeur);
 });
 
@@ -355,7 +349,7 @@ function basculerModalAction(type) {
       runtime: '',
       wish: type === 'wish',
       fav: type === 'fav',
-      createdAt: Date.now()
+
     });
     index = films.length - 1;
   } else {
